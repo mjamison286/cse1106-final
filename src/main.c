@@ -5,7 +5,7 @@
 
 #define PIN 17
 #define MAX 10
-#define PATH "../status.txt"
+#define PATH "../data/status.txt"
 
 int addReading(double*, int);
 int checkTemp(double);
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 		int choice;
 		
 		printf("-- Temperature Controller --\n");
-		printf("1 - Add a reading (up to %d)\n", MAX);
+		printf("1 - Add a reading in Fahrenheit (up to %d)\n", MAX);
 		printf("2 - Display all readings\n");
 		printf("3 - Calculate the average of the readings\n");
 		printf("4 - Change the acceptable temperature range\n");
@@ -94,9 +94,21 @@ int addReading(double* array, int index)
 	
 	double reading;
 	
-	printf("Enter the temperature reading: ");
+	while(1)
+	{
+		printf("Enter the temperature reading: ");
 	
-	scanf("%lf", &reading);
+		scanf("%lf", &reading);	
+		
+		if(reading > 0)
+		{
+			break;
+		}
+		else
+		{
+			printf("Please enter a positive number for the reading.\n");
+		}
+	}
 	
 	array[index] = reading;
 	
@@ -161,11 +173,11 @@ void changeRange(int* lptr, int* hptr)
 	int lowest;
 	int highest;
 	
-	printf("Enter the lowest acceptable temperature, to the nearest degree: ");
+	printf("Enter the lowest acceptable temperature, to the nearest degree Fahrenheit: ");
 	scanf("%d", &lowest);
 	while(getchar() != '\n');
 	
-	printf("Enter the highest acceptable temperature, to the nearest degree: ");
+	printf("Enter the highest acceptable temperature, to the nearest degree Fahrenheit: ");
 	scanf("%d", &highest);
 	while(getchar() != '\n');
 	
