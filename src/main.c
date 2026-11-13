@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <pigpio.h>
 
@@ -7,11 +8,11 @@
 #define PATH "../status.txt"
 
 int addReading(double*, int);
-int checkTemp(double, int, int);
+int checkTemp(double);
 double calculateAverage(double*, int);
 int saveToFile(FILE*, double*, int);
 void changeRange(int*, int*);
-void displayAll(double*, int, int, int);
+void displayAll(double*, int);
 
 int lowest = 68;
 int highest = 76;
@@ -19,7 +20,7 @@ int highest = 76;
 int main(int argc, char* argv[])
 {
 	double readings[MAX];
-	int readingCount = 0;
+	int count = 0;
 	
 	FILE* fptr;
 	
@@ -56,8 +57,7 @@ int main(int argc, char* argv[])
 				displayAll(readings, count);
 				break;
 			case 3:
-				double average = calculateAverage(readings, count);
-				printf("The calculated average is: %lf\n", average);
+				printf("The calculated average is: %lf\n", calculateAverage(readings, count));
 				break;
 			case 4:
 				changeRange(&lowest, &highest);
@@ -69,7 +69,6 @@ int main(int argc, char* argv[])
 				}
 				break;
 			case 6:
-				fclose(fptr);
 				free(fptr);
 				gpioWrite(PIN, 0);
 				gpioTerminate();
@@ -130,7 +129,7 @@ double calculateAverage(double* array, int count)
 	return sum / count;
 }
 
-int saveToFile(FILE* file, double* array, int count);
+int saveToFile(FILE* file, double* array, int count)
 {
 	file = fopen(PATH, "a");
 	
@@ -142,18 +141,17 @@ int saveToFile(FILE* file, double* array, int count);
 	
 	for(int i = 0; i < count; i++)
 	{
-		if(checkTemp(array[i], lowest, highest) == 0)
+		if(checkTemp(array[i]) == 0)
 		{
-			fprintf("%lf	-	NORMAL\n", array[i]);
+			fprintf(file, "%lf	-	NORMAL\n", array[i]);
 		}
 		else
 		{
-			fprintf("%lf	-	WARNING\n", array[i]);
+			fprintf(file, "%lf	-	WARNING\n", array[i]);
 		}
 	}
 	
 	fclose(file);
-	free(file);
 	
 	return 0;
 }
@@ -179,7 +177,7 @@ void displayAll(double* array, int count)
 {
 	for(int i = 0 ; i < count; i++)
 	{
-		if(checkTemp(array[i], lowest, highest) == 0)
+		if(checkTemp(array[i]) == 0)
 		{
 			printf("%lf		-	NORMAL\n", array[i]);
 		}
